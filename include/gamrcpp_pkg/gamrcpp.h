@@ -49,7 +49,7 @@ using namespace std;
 class GAMRCPP
 {
 	public:
-		vec_vec_loc runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_graph, int num_of_robs, vector<struct loc> robs_locs, int num_of_goals, vector<struct loc> goals_locs, uint horizon, bool clus_plan, uint clus_id);
+		vec_vec_loc runGAMRCPP(int ws_size_x, int ws_size_y, string output_subdir_, vec_vec_bool ws_graph, int num_of_robs, vector<struct loc> robs_locs, int num_of_goals, vector<struct loc> goals_locs, uint horizon, bool clus_plan, uint clus_id);
 
 		void showQueue(queue<struct loc> BFS_QUEUE);
 		void showMatrix(vec_vec_int v_2d);

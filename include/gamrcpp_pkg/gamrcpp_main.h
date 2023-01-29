@@ -17,6 +17,9 @@ Author: Ratijit Mitra
 #include <queue>
 #include <stack>
 
+#include <bits/stdc++.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include <ros/ros.h>
 #include <ros/package.h>
@@ -60,7 +63,9 @@ class GAMRCPP_MAIN
 		int ws_size_x;		// Workspace size along x
 		int ws_size_y;		// Workspace size along y
 		int rob_count;		// Number of robots
-
+		int test_no;       
+        std::string output_subdir;
+		
 		ros::NodeHandle *nh;
 		ros::ServiceServer localview_ss;		// Localview service server
 		bool flag_mis_began;		// Has the mission begun?
