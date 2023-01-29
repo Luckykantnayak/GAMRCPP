@@ -27,6 +27,7 @@ Author : Ratijit Mitra
 
 #include "gamrcpp_pkg/gamrcpp.h"
 
+string output_subdir;
 
 //==================================================1. Optimal Costs : START
 void GAMRCPP::showQueue(queue<struct loc> BFS_QUEUE)
@@ -1511,9 +1512,9 @@ vec_vec_loc GAMRCPP::compute_collision_averted_paths(int num_of_robs, vector<int
 	std::string capl_filename;
 
 	if(clus_plan)
-		capl_filename = gamrcppPkgPath + OUTPUT_DIR + boost::lexical_cast<std::string>(horizon) + "_" + boost::lexical_cast<std::string>(clus_id) + OPTIMAL_PATH_LENGTHS_FILE;
+		capl_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + boost::lexical_cast<std::string>(horizon) + "_" + boost::lexical_cast<std::string>(clus_id) + OPTIMAL_PATH_LENGTHS_FILE;
 	else
-		capl_filename = gamrcppPkgPath + OUTPUT_DIR + boost::lexical_cast<std::string>(horizon) + OPTIMAL_PATH_LENGTHS_FILE;
+		capl_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + boost::lexical_cast<std::string>(horizon) + OPTIMAL_PATH_LENGTHS_FILE;
 	
 	capl_file.open(capl_filename.c_str(), ios::out);
 	int max_time = -1;
@@ -1587,9 +1588,9 @@ vec_vec_loc GAMRCPP::compute_optimal_trajectories(int num_of_robs, vector<int> t
 	std::string capl_filename;
 
 	if(clus_plan)
-		capl_filename = gamrcppPkgPath + OUTPUT_DIR + boost::lexical_cast<std::string>(horizon) + "_" + boost::lexical_cast<std::string>(clus_id) + OPTIMAL_PATH_LENGTHS_FILE;
+		capl_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + boost::lexical_cast<std::string>(horizon) + "_" + boost::lexical_cast<std::string>(clus_id) + OPTIMAL_PATH_LENGTHS_FILE;
 	else
-		capl_filename = gamrcppPkgPath + OUTPUT_DIR + boost::lexical_cast<std::string>(horizon) + OPTIMAL_PATH_LENGTHS_FILE;
+		capl_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + boost::lexical_cast<std::string>(horizon) + OPTIMAL_PATH_LENGTHS_FILE;
 	
 	// capl_file.open(capl_filename.c_str(), ios::out);
 	// int max_time = -1;
@@ -1730,8 +1731,9 @@ void GAMRCPP::monitor_paths(int ws_size_x, int ws_size_y, int num_of_robs, vec_v
 }
 
 
-vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_graph, int num_of_robs, vector<struct loc> robs_states, int num_of_goals, vector<struct loc> goals_locs, uint horizon, bool clus_plan, uint clus_id)
+vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, string output_subdir_, vec_vec_bool ws_graph, int num_of_robs, vector<struct loc> robs_states, int num_of_goals, vector<struct loc> goals_locs, uint horizon, bool clus_plan, uint clus_id)
 {
+	output_subdir = output_subdir_;
 	#ifdef DEBUG_WS_GRAPH
 		cout << "\nWS_Graph...\n";
 
@@ -1773,7 +1775,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 
 	#ifdef DEBUG_OC
 		printf("\n\nOptimal Cost Matrix...\n");
-		debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_OC_FILENAME + boost::lexical_cast<std::string>(horizon) + CSV_EXT;
+		debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_OC_FILENAME + boost::lexical_cast<std::string>(horizon) + CSV_EXT;
 		debug_file.open(debug_filename.c_str(), ios::out);
 
 		for(int rob_index = 0; rob_index < num_of_robs; rob_index++)
@@ -1806,7 +1808,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 
 	#ifdef DEBUG_OG
 		cout << "\nOptimal Goal Vector...\n";
-		debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_OG_FILENAME + boost::lexical_cast<std::string>(horizon) + TXT_EXT;
+		debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_OG_FILENAME + boost::lexical_cast<std::string>(horizon) + TXT_EXT;
 		debug_file.open(debug_filename.c_str(), ios::out);
 
 		for(int i = 0; i < num_of_robs; i++)
@@ -1828,7 +1830,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 
 	#ifdef DEBUG_OP
 		cout << "\nOptimal Paths...\n";
-		debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_OP_FILENAME + boost::lexical_cast<std::string>(horizon) + CSV_EXT;
+		debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_OP_FILENAME + boost::lexical_cast<std::string>(horizon) + CSV_EXT;
 		debug_file.open(debug_filename.c_str(), ios::out);
 
 		for(int i = 0; i < num_of_robs; i++)
@@ -1867,7 +1869,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 
 		#ifdef DEBUG_FP
 			cout << "\nFeasible Paths...\n";
-			debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_FP_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + CSV_EXT;
+			debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_FP_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + CSV_EXT;
 			debug_file.open(debug_filename.c_str(), ios::out);
 
 			for(int i = 0; i < num_of_robs; i++)
@@ -1889,7 +1891,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 			debug_file.close();
 		#endif
 
-		debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_FP_STAT_FILENAME + TXT_EXT;
+		debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_FP_STAT_FILENAME + TXT_EXT;
 		debug_file.open(debug_filename.c_str(), ios::app);
 
 		// cout << "\n#Killed = " << killed_count << ".\t#Revived = " << revived_count;
@@ -1904,7 +1906,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 
 		#ifdef DEBUG_PO
 			cout << "\nPartial Orders...\n";
-			debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_PO_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + CSV_EXT;
+			debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_PO_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + CSV_EXT;
 			debug_file.open(debug_filename.c_str(), ios::out);
 
 			for(int i = 0; i < num_of_robs; i++)
@@ -1954,7 +1956,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 			// cout << "\nInvalid TO\n";
 
 			#ifdef DEBUG_TO
-				debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_TO_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + CSV_EXT;
+				debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_TO_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + CSV_EXT;
 				debug_file.open(debug_filename.c_str(), ios::out);
 
 				for(int i = 0; i < num_of_robs; i++)
@@ -2067,7 +2069,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 
 			#ifdef DEBUG_DP
 				cout << "\nAdjusted dependent paths...\n";
-				debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_DP_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + CSV_EXT;
+				debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_DP_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + CSV_EXT;
 				debug_file.open(debug_filename.c_str(), ios::out);
 
 				for(uint i = 0; i < num_of_robs; i++)
@@ -2093,7 +2095,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 		{
 			#ifdef DEBUG_TO
 				cout << "\nTotal Order...\n";
-				debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_TO_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + TXT_EXT;
+				debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_TO_FILENAME + boost::lexical_cast<std::string>(horizon) + "_i" + boost::lexical_cast<std::string>(iter_id) + TXT_EXT;
 				debug_file.open(debug_filename.c_str(), ios::out);
 
 				for(int i = 0; i < num_of_robs; i++)
@@ -2118,7 +2120,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 
 	#ifdef DEBUG_SO
 		cout << "\nStart-time offsets...\n";
-		debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_SO_FILENAME + boost::lexical_cast<std::string>(horizon) + TXT_EXT;				
+		debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_SO_FILENAME + boost::lexical_cast<std::string>(horizon) + TXT_EXT;				
 		debug_file.open(debug_filename.c_str(), ios::out);
 
 		for(int i = 0; i < num_of_robs; i++)
@@ -2144,7 +2146,7 @@ vec_vec_loc GAMRCPP::runGAMRCPP(int ws_size_x, int ws_size_y, vec_vec_bool ws_gr
 
 	#ifdef DEBUG_CAP
 		cout << "\nTrajectories...\n";
-		debug_filename = gamrcppPkgPath + OUTPUT_DIR + DEBUG_CAP_FILENAME + boost::lexical_cast<std::string>(horizon) + CSV_EXT;
+		debug_filename = gamrcppPkgPath + OUTPUT_DIR + output_subdir + DEBUG_CAP_FILENAME + boost::lexical_cast<std::string>(horizon) + CSV_EXT;
 		debug_file.open(debug_filename.c_str(), ios::out);
 
 		for(int i = 0; i < num_of_robs; i++)

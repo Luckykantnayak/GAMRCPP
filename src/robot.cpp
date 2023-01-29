@@ -48,6 +48,10 @@ class RobotClass
 		double_mat ws_lidar;			// LiDAR values
 		uint ws_size_x;					// Workspace size
 		uint ws_size_y;
+		int Dx;
+		int Dy;
+		int bots;
+		int test_no ;
 		float posX;						// Current pose
 		float posY;
 		float posTheta;
@@ -61,9 +65,12 @@ class RobotClass
 		{
 			this->nh = nh;
 			this->nh->getParam("rid", rob_id);
-
+            ros::param::get("gamrcpp_node/ws_x", Dx);
+			ros::param::get("gamrcpp_node/ws_y", Dy);
+			ros::param::get("gamrcpp_node/rc", bots);
+			ros::param::get("gamrcpp_node/test", test_no);
 			cell_info_map.clear();
-
+            
 			string path_service_name = "robot_" + to_string(rob_id) + "/share_plan";
 			path_ss = nh->advertiseService(path_service_name, &RobotClass::getPath, this);
 			printf("Path Service Server = %s", path_service_name.c_str());
@@ -73,7 +80,11 @@ class RobotClass
 		//====================================================================================================
 		void populateLidarValues()
 		{
-			string rob_ws_file_path = ros::package::getPath("gamrcpp_pkg") + IP_DIR_NAME + ROB_WS_FILENAME;
+
+			string ip_subdir = to_string(Dx)+"x"+to_string(Dy)+"_"+to_string(bots)+"/TEST-"+to_string(test_no)+"/";
+			//printf("subdir = %s", ip_subdir.c_str());
+			string rob_ws_file_path = ros::package::getPath("gamrcpp_pkg") + IP_DIR_NAME + ip_subdir + ROB_WS_FILENAME; 
+			//printf("\ndir = %s", rob_ws_file_path.c_str());
 			ifstream ifs;
 		    ifs.open(rob_ws_file_path.c_str()); 
 		  	string line;

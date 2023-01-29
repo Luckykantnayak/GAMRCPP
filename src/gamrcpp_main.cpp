@@ -8,6 +8,8 @@ Author: Ratijit Mitra
 
 #include "gamrcpp_pkg/gamrcpp_main.h"
 
+#include <boost/filesystem.hpp>
+
 
 using namespace ros;
 
@@ -23,14 +25,20 @@ void GAMRCPP_MAIN::initializeGAMRCPP(ros::NodeHandle *nh)
 	goal_count = 0;
 	cov_count = 0;
 	flag_mis_began = false;
-
+    
+	
 	nh -> getParam("ws_x", ws_size_x);
 	nh -> getParam("ws_y", ws_size_y);
 	nh -> getParam("rc", rob_count);
+	nh -> param("test", test_no, 1);
+
+	output_subdir = to_string(ws_size_x)+"x"+to_string(ws_size_y)+"_"+to_string(rob_count)+"/TEST-"+to_string(test_no)+"/";
 
 	printf("Workspace Size = %d x %d\n", ws_size_x, ws_size_y);
 
 	printf("#Robots = %d\n", rob_count);
+
+	printf("#Test No = %d\n", test_no);
 	position btp;
 	btp.x = btp.y = -1;
     
@@ -48,7 +56,8 @@ void GAMRCPP_MAIN::initializeGAMRCPP(ros::NodeHandle *nh)
 	vector<vector<double> > ws_init(ws_size_x, vector<double>(ws_size_y, -1));			// Initialized to Unexplored Cells (-1)
 	ws = ws_init;
 
-	std::string gapPkgPath = ros::package::getPath("gamrcpp_pkg") + OUTPUT_DIR;
+	std::string gapPkgPath = ros::package::getPath("gamrcpp_pkg") + OUTPUT_DIR + output_subdir ;
+	boost::filesystem::create_directories(gapPkgPath);
 	ofstream rph_file;			//Empty resultPerHorizon.txt
 	rph_file.open((gapPkgPath + RESULT_PER_HORIZON_FILE).c_str(), ios::out);
 	rph_file.close();
@@ -209,13 +218,13 @@ void GAMRCPP_MAIN::checkCompletion(int discovered_cells)
 		this->sharePlan(tmpPlan, horizon_length);
 
 		ofstream rph_file;
-		std::string rph_file_path = ros::package::getPath("gamrcpp_pkg") + OUTPUT_DIR + RESULT_PER_HORIZON_FILE;
+		std::string rph_file_path = ros::package::getPath("gamrcpp_pkg") + OUTPUT_DIR + output_subdir + RESULT_PER_HORIZON_FILE;
 		rph_file.open(rph_file_path.c_str(), fstream::app);	
 		rph_file << "Horizon = " << hor_id << ", #O = " << obs_count << ", #G = " << goal_count << ", #C = " << cov_count << ", Computation Time = 0, Horizon Length = 0, #Active Robots = 0";
 		rph_file.close();
 
 		ofstream ofp;
-		std::string output_file = ros::package::getPath("gamrcpp_pkg") + OUTPUT_DIR + RESULT_FILE;
+		std::string output_file = ros::package::getPath("gamrcpp_pkg") + OUTPUT_DIR + output_subdir + RESULT_FILE;
 		ofp.open(output_file.c_str(), fstream::app);
 		ofp << "Workspace Size = " << ws_size_x << " x " << ws_size_y << ", #Robots = " << rob_count << ", #Horizons = " << (hor_id + 1) << ", Total Computation Time = " << tot_comp_time << ", Total Horizon Length = " << tot_hor_len << ", Mission Time = " << mis_time.toSec();
 		ofp.close();
@@ -285,7 +294,7 @@ void GAMRCPP_MAIN::callRobot(ros::ServiceClient sc, gamrcpp_pkg::PlanForHorizon 
 void GAMRCPP_MAIN::printHorizonInformation(uint active_robs_count, int horizon_length, double comp_time)
 {
 	ofstream ofp;
-	std::string output_file = ros::package::getPath("gamrcpp_pkg") + OUTPUT_DIR + RESULT_PER_HORIZON_FILE;
+	std::string output_file = ros::package::getPath("gamrcpp_pkg") + OUTPUT_DIR + output_subdir + RESULT_PER_HORIZON_FILE;
 	ofp.open(output_file.c_str(), fstream::app);
 	ofp << "Horizon = " << hor_id << ", #O = " << obs_count << ", #G = " << goal_count << ", #C = " << cov_count <<  ", Computation Time = " << comp_time << ", Horizon Length = " << horizon_length << ", #Active Robots = " << active_robs_count << endl;
 	ofp.close();
@@ -353,7 +362,7 @@ void GAMRCPP_MAIN::generateNextPlan()
 	}
 
 	GAMRCPP gamrcpp_obj;
-	vec_vec_loc trajectories = gamrcpp_obj.runGAMRCPP(ws_size_x, ws_size_y, ws_graph, rob_count, robs_locs, goals_locs.size(), goals_locs, hor_id, false, 1);		//Paths of Robots
+	vec_vec_loc trajectories = gamrcpp_obj.runGAMRCPP(ws_size_x, ws_size_y, output_subdir,ws_graph, rob_count, robs_locs, goals_locs.size(), goals_locs, hor_id, false, 1);		//Paths of Robots
 
 	vector<struct loc> rob_path;		//Path of a Robot
 	struct loc rob_path_loc, rob_path_start_loc, rob_path_goal_loc;		//A Location in the Path of a Robot
